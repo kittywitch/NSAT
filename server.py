@@ -69,7 +69,11 @@ def main():
 	print("[Main] Initialising NSTServerFactory.")
 	factory = NSTServerFactory()
 	print("[Main] Binding reactor to port %s." % cfg_handler.config["server"]["port"])
-	reactor.listenTCP(cfg_handler.config["server"]["port"], factory)
+	with open('./keys/server.pem') as f:
+		certData = f.read()
+	certificate = ssl.PrivateCertificate.loadPEM(certData).options()
+	# openssl req -newkey rsa:2048 -nodes -keyout server.key -out server.crt
+	reactor.listenSSL(cfg_handler.config["server"]["port"], factory, certificate)
 	print("[Main] Running Reactor.")
 	reactor.run()
 
