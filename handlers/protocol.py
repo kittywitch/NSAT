@@ -2,9 +2,7 @@ import json
 import mod
 
 class protocolHandler():
-	def __init__(self, err_handler, cfg_handler):
-		self.err_handler = err_handler
-		self.cfg_handler = cfg_handler
+	def __init__(self):
 		print("[ProtocolHandler] Intialised.")
 
 	def on_connect(self, server):
@@ -31,12 +29,12 @@ class protocolHandler():
 		# Messages from here will be marked "ValidateJSON".
 		try:
 			json_line = json.loads(line)
-			if self.cfg_handler.config["server"]["debug"]:
+			if mod.cfg_handler.config["server"]["debug"]:
 				print("[ValidateJSON-Debug] %s" % json_line)
 			return json_line
 		except ValueError as e:
 			print("[ValidateJSON] \"%s\" is not valid JSON." % line)
-			self.err_handler.handle_error("ValidateJSON", e, server)
+			mod.err_handler.handle_error("ValidateJSON", e, server)
 			return
 
 	# Checks if there was an action in the JSON, if there was, checks if it's in the function DB, failing that, errors.
@@ -44,14 +42,14 @@ class protocolHandler():
 		# Messages from here will be marked "ValidateAction".
 		if "action" in line:
 			if line["action"] in mod.mod_db:
-				if self.cfg_handler.config["server"]["debug"]:
+				if mod.cfg_handler.config["server"]["debug"]:
 					print("[ValidateAction-Debug] Valid action \"%s\" provided." % line["action"])
 				return mod.mod_db[line["action"]]
 			else:
-				self.err_handler.handle_error("ValidateAction", "Action \"%s\" does not exist." % line["action"], server)
+				mod.err_handler.handle_error("ValidateAction", "Action \"%s\" does not exist." % line["action"], server)
 				return
 		else:
-			self.err_handler.handle_error("ValidateAction", "No action was provided.", server)
+			mod.err_handler.handle_error("ValidateAction", "No action was provided.", server)
 			return
 
 	# TODO: Data validation from patterns and input things.

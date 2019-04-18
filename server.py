@@ -6,7 +6,7 @@ from twisted.protocols import basic
 import configparser, sys, os, re, imp
 
 # Modules created for this project.
-import handlers, mod
+import handlers.error, handlers.protocol, handlers.config, mod
 
 py_regex = "(.+\.py)$"
 
@@ -62,10 +62,10 @@ def main():
 
 	import_dir("modules")
 
-	err_handler = handlers.error.errorHandler()
-	cfg_handler = handlers.config.configHandler()
+	err_handler = mod.err_handler
+	cfg_handler = mod.cfg_handler
 	cfg_handler.load_config()
-	proto_handler = handlers.protocol.protocolHandler(err_handler, cfg_handler)
+	proto_handler = mod.proto_handler
 	print("[Main] Initialising NSTServerFactory.")
 	factory = NSTServerFactory()
 	print("[Main] Binding reactor to port %s." % cfg_handler.config["server"]["port"])
