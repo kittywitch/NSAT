@@ -36,7 +36,7 @@ class NSTClient(LineReceiver):
 			# generate the token
 			token = gen_token(r_id)
 			# sends it to the server
-			socket_send(self, "\"action\":\"register\", \"uuid\":\"%s\", \"token\":\"%s\"}" % (r_id, token))
+			socket_send(self, "{\"action\":\"register\", \"uuid\":\"%s\", \"token\":\"%s\"}" % (r_id, token))
 		else:
 			r_id = uuid.uuid1(uuid.getnode())
 			socket_send(self, "{\"action\":\"register\", \"uuid\":\"%s\", \"token\":\"%s\"}" % (r_id, token))
