@@ -11,12 +11,13 @@ def load_token():
 	else:
 		return None
 
-def gen_token(uuid):
+def gen_token(id_in):
 	# Generates a token from a given UUID by salting it with the current time and a unique UUID and SHA512 hashing it, returns the result.
-	rand_uuid = uuid.uuid4()
+	rand_uuid = str(uuid.uuid4())
 	time_now = time.time()
-	result = "%s%s%s" % (uuid, time_now, rand_uuid)
-	return hashlib.sha512(result).hexdigest()
+	result = "%s%s%s" % (id_in, time_now, rand_uuid)
+	print(result)
+	return hashlib.sha512(result.encode("utf-8")).hexdigest()
 
 def store_token(token):
 	return token
@@ -31,9 +32,9 @@ class NSTClient(LineReceiver):
 		# registration process
 		if token == None:
 			# creates the same UUID every time
-			r_id = uuid.uuid1(uuid.getnode())
+			r_id = str(uuid.uuid1(uuid.getnode()))
 			# generate the token
-			token = gen_token(uuid)
+			token = gen_token(r_id)
 			# sends it to the server
 			socket_send(self, "\"action\":\"register\", \"uuid\":\"%s\", \"token\":\"%s\"}" % (r_id, token))
 		else:
