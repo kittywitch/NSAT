@@ -2,6 +2,7 @@ import core
 
 @core.add_action("register")
 def register_client(data, server):
+	# This implements the two actions, enroll_token and reject and their JSON structures.
 	peer = "%s:%s" % (server._peer.host, server._peer.port)
 	user_input = input("Allow registration for client %s (yes/no)? " % peer)
 	if user_input == "yes":
@@ -15,6 +16,7 @@ def register_client(data, server):
 
 @core.add_action("reestablish")
 def reestablish_client(data, server):
+	# This allows a client that already has enrolled a token to reestablish a tokenized connection.
 	peer = "%s:%s" % (server._peer.host, server._peer.port)
 	token = data["token"]
 	if peer in core.token_db:

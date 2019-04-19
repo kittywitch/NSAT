@@ -22,9 +22,11 @@ def init():
 	global proto_handler
 	proto_handler = handlers.protocol.protocolHandler()
 
+# Provides an easy function for encoding data without being inline with other things, such as % style replacements.
 def socket_send(server, data):
 	server.sendLine(data.encode("utf-8"))
 
+# This implements the ModuleHandler, this uses decorators, so this is accessed by @core.add_action(name) before a function definition for a module.
 def add_action(name):
 	def wrapper(function):
 		mod_db[name] = function

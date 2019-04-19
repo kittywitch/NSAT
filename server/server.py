@@ -10,6 +10,7 @@ import handlers.error, handlers.protocol, handlers.config, core
 
 py_regex = "(.+\.py)$"
 
+# These two functions are used for importing an entire directory automatically. Used for ./modules in this case.
 def modules_in_dir(path):
 	result = set()
 	for entry in os.listdir(path):
@@ -25,8 +26,10 @@ def import_dir(path):
 		search_path = os.path.join(os.getcwd(), path)
 		module_name, ext = os.path.splitext(filename)
 		fp, path_name, description = imp.find_module(module_name, [search_path,])
+		# This uses the lowest level module loading systems to load files pulled from a directory path.
 		module = imp.load_module(module_name, fp, path_name, description)
-		
+
+# This is the implementation of the actual socket system using Twisted. The protocol handler is used to actually deal with things, though.
 def main():
 	class NSTServer(basic.LineReceiver):
 		# Messages from here will be marked "NSTServer".
@@ -34,7 +37,7 @@ def main():
 			# TODO: Session handling.
 			self._peer = self.transport.getPeer()
 			print("[NSTServer] Client connected from %s:%d." % (self._peer.host, self._peer.port))
-			proto_handler.on_connect(self)
+			core.proto_handler.on_connect(self)
 
 		def connectionLost(self, reason):
 			if reason.type == error.ConnectionAborted:
@@ -45,28 +48,26 @@ def main():
 				print("[NSTServer] Connection closed cleanly.")
 
 		def lineReceived(self, line):
-			proto_handler.handle_line(line, self)
+			core.proto_handler.handle_line(line, self)
 
 	class NSTServerFactory(protocol.Factory):
 		protocol = NSTServer
 
 	# Messages from here will be marked "Main".	
+	# Initialises the handlers for use elsewhere.
 	core.init()
 
+	# Automatically loads all .py files as modules from ./modules.
 	import_dir("modules")
 
-	err_handler = core.err_handler
-	cfg_handler = core.cfg_handler
-	cfg_handler.load_config()
-	proto_handler = core.proto_handler
 	print("[Main] Initialising NSTServerFactory.")
 	factory = NSTServerFactory()
-	print("[Main] Binding reactor to port %s." % cfg_handler.config["server"]["port"])
+	print("[Main] Binding reactor to port %s." % core.cfg_handler.config["server"]["port"])
 	with open('./keys/server.pem') as f:
 		certData = f.read()
 	certificate = ssl.PrivateCertificate.loadPEM(certData).options()
 	# openssl req -newkey rsa:2048 -nodes -keyout server.key -out server.crt
-	reactor.listenSSL(cfg_handler.config["server"]["port"], factory, certificate)
+	reactor.listenSSL(core.cfg_handler.config["server"]["port"], factory, certificate)
 	print("[Main] Running Reactor.")
 	reactor.run()
 

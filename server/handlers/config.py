@@ -6,6 +6,7 @@ class configHandler():
 		print("[ConfigHandler] Intialised.")
 
 	def load_config(self):
+		# This is primarily for loading a JSON file into a variable for config purposes.
 		print("[ConfigHandler] Loading config from \"./config.json\".")
 		try:
 			with open("config.json") as config_file:
