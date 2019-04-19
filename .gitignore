@@ -1,3 +1,3 @@
 *.pyc
-.token
-.token_db
+client/.token
+server/.token_db
