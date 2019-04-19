@@ -3,3 +3,4 @@ twisted
 configparser
 schedule
 service_identity
+twilio

@@ -1,4 +1,4 @@
-import time, hashlib, handlers, json, os, twilio_handler
+import time, hashlib, handlers.error, handlers.config, handlers.protocol, handlers.sms, json, os
 
 def init():
 	# Modules Database, key => action, value => function
@@ -12,6 +12,13 @@ def init():
 	err_handler = handlers.error.errorHandler()
 	global cfg_handler
 	cfg_handler = handlers.config.configHandler()
+	cfg_handler.load_config()
+	# sms handler requires config handler initialised
+	handlers.sms.init()
+	global notify_sms
+	notify_sms = handlers.sms.notify_sms
+	global notify_call
+	notify_call = handlers.sms.notify_call
 	global proto_handler
 	proto_handler = handlers.protocol.protocolHandler()
 
