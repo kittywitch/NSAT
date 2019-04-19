@@ -1,5 +1,5 @@
 import json
-import mod
+import core
 
 class protocolHandler():
 	def __init__(self):
@@ -29,34 +29,34 @@ class protocolHandler():
 		# Messages from here will be marked "ValidateJSON".
 		try:
 			json_line = json.loads(line)
-			if mod.cfg_handler.config["server"]["debug"]:
+			if core.cfg_handler.config["server"]["debug"]:
 				print("[ValidateJSON-Debug] %s" % json_line)
 			return json_line
 		except ValueError as e:
 			print("[ValidateJSON] \"%s\" is not valid JSON." % line)
-			mod.err_handler.handle_error("ValidateJSON", e, server)
+			core.err_handler.handle_error("ValidateJSON", e, server)
 			return
 
 	# Checks if there was an action in the JSON, if there was, checks if it's in the function DB, failing that, errors.
 	def validate_action(self, line, server):
 		# Messages from here will be marked "ValidateAction".
 		if "action" in line:
-			if line["action"] in mod.mod_db:
-				if mod.cfg_handler.config["server"]["debug"]:
+			if line["action"] in core.mod_db:
+				if core.cfg_handler.config["server"]["debug"]:
 					print("[ValidateAction-Debug] Valid action \"%s\" provided." % line["action"])
-				return mod.mod_db[line["action"]]
+				return core.mod_db[line["action"]]
 			else:
-				mod.err_handler.handle_error("ValidateAction", "Action \"%s\" does not exist." % line["action"], server)
+				core.err_handler.handle_error("ValidateAction", "Action \"%s\" does not exist." % line["action"], server)
 				return
 		else:
-			mod.err_handler.handle_error("ValidateAction", "No action was provided.", server)
+			core.err_handler.handle_error("ValidateAction", "No action was provided.", server)
 			return
 
 	# TODO: Data validation from patterns and input things.
 	def validate_data(self, data):
 		return data
 
-	# Takes the function from the module DB and executes it with the data provided, passing the server over to the function as a parameter too.
+	# Takes the function from the coreule DB and executes it with the data provided, passing the server over to the function as a parameter too.
 	def execute_action(self, action, data, server):
 		print("[ExecuteAction] Executing \"%s\" with data: \"%s\"." % (action, data))
 		action(data, server)

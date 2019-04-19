@@ -15,6 +15,16 @@ def init():
 	global proto_handler
 	proto_handler = handlers.protocol.protocolHandler()
 
+def socket_send(server, data):
+	server.sendLine(data.encode("utf-8"))
+
+def add_action(name):
+	def wrapper(function):
+		mod_db[name] = function
+		print("[ModuleHandler] Loaded function \"%s\"." % name)
+		return function
+	return wrapper
+
 def add_token(uuid, token):
 	# Adds a token to the database and the token database file.
 	# does the token DB file exist, if not, create it
