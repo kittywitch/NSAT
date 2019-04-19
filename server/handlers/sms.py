@@ -2,8 +2,8 @@ from twilio.rest import Client
 import core
 
 def init():
-	print("[TwilioHandler] Initialised.")
 	client = Client(core.cfg_handler.config["server"]["twilio_id"], core.cfg_handler.config["server"]["twilio_token"])
+	print("[TwilioHandler] Initialised.")
 
 def notify_sms(msg_txt):
 	msg = client.messages.create(
