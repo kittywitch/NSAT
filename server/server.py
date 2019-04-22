@@ -75,7 +75,7 @@ def main():
 	import_dir("modules")
 
 	factory = NSTServerFactory()
-	logging.info("Binding reactor to port %s." % core.cfg_handler.config["server"]["port"])
+	logging.info(f"Binding reactor to port {core.cfg_handler.config['server']['port']}.")
 	with open('./keys/server.pem') as f:
 		certData = f.read()
 	certificate = ssl.PrivateCertificate.loadPEM(certData).options()
