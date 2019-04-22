@@ -2,13 +2,13 @@ from twilio.rest import Client
 import core
 
 def init():
-	client = Client(core.cfg_handler.config["server"]["twilio_id"], core.cfg_handler.config["server"]["twilio_token"])
+	client = Client(core.cfg_handler.config["twilio"]["id"], core.cfg_handler.config["twilio"]["token])
 	print("[TwilioHandler] Initialised.")
 
 def notify_sms(msg_txt):
 	msg = client.messages.create(
-	    to=core.cfg_handler.config["server"]["twilio_out"],
-	    from_=core.cfg_handler.config["server"]["twilio_in"],
+	    to=core.cfg_handler.config["twilio"]["to"],
+	    from_=core.cfg_handler.config["twilio"]["from"],
 	    body=msg_txt
 	)
 	return msg
@@ -16,8 +16,8 @@ def notify_sms(msg_txt):
 def notify_call():
 	# TODO: Implement TwiML service backend
 	call = client.calls.create(
-	    to=core.cfg_handler.config["server"]["twilio_out"],
-	    from_=core.cfg_handler.config["server"]["twilio_in"],
+	    to=core.cfg_handler.config["twilio"]["to"],
+	    from_=core.cfg_handler.config["twilio"]["from"],
 	    url="http://demo.twilio.com/docs/voice.xml"
 	)
 	return call

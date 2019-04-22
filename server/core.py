@@ -1,4 +1,4 @@
-import time, hashlib, handlers.error, handlers.config, handlers.protocol, handlers.sms, json, os
+import time, hashlib, handlers.error, handlers.config, handlers.protocol, handlers.sms, handlers.po, json, os
 
 def init():
 	# Modules Database, key => action, value => function
@@ -19,6 +19,9 @@ def init():
 	notify_sms = handlers.sms.notify_sms
 	global notify_call
 	notify_call = handlers.sms.notify_call
+	handlers.po.init()
+	global notify_po
+	notify_po = handlers.po.notify_po
 	global proto_handler
 	proto_handler = handlers.protocol.protocolHandler()
 
