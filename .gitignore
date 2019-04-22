@@ -1,3 +1,4 @@
 *.pyc
 client/.token
 server/.token_db
+server/server.log

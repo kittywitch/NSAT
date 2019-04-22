@@ -1,4 +1,4 @@
-import time, hashlib, handlers.error, handlers.config, handlers.protocol, handlers.sms, handlers.po, json, os
+import logging, time, hashlib, handlers.config, handlers.protocol, handlers.sms, handlers.po, json, os
 
 def init():
 	# Modules Database, key => action, value => function
@@ -8,8 +8,6 @@ def init():
 	global token_db
 	token_db = {}
 	# Handlers
-	global err_handler
-	err_handler = handlers.error.errorHandler()
 	global cfg_handler
 	cfg_handler = handlers.config.configHandler()
 	cfg_handler.load_config()
@@ -33,7 +31,7 @@ def socket_send(server, data):
 def add_action(name):
 	def wrapper(function):
 		mod_db[name] = function
-		print("[ModuleHandler] Loaded function \"%s\"." % name)
+		logging.info("Loaded function \"%s\"." % name)
 		return function
 	return wrapper
 
@@ -51,10 +49,10 @@ def add_token(uuid, token):
 		token_file.seek(0)
 		token_file.write(json.dumps(token_obj))
 		token_file.close()
-		print("[TokenDB] Added token for %s." % uuid)
+		logging.info("Added token for \"%s\"." % uuid)
 	else:
 		token_db[uuid] = token
 		# read it, import the JSON data structures
 		token_file = open(".token_db", "w+")
 		token_file.write(json.dumps(token_db))
-		print("[TokenDB] Added token for %s." % uuid)
+		logging.info("Added token for \"%s\"." % uuid)

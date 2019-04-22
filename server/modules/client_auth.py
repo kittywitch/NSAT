@@ -1,17 +1,17 @@
-import core
+import core, logging
 
 @core.add_action("register")
 def register_client(data, server):
 	# This implements the two actions, enroll_token and reject and their JSON structures.
 	peer = "%s:%s" % (server._peer.host, server._peer.port)
-	user_input = input("Allow registration for client %s (yes/no)? " % peer)
+	user_input = input(f"Allow registration for client {peer} (yes/no)? ")
 	if user_input == "yes":
-		core.socket_send(server, "{\"action\":\"enroll_token\", \"token\":\"%s\"}" % str(data["token"]))
+		core.socket_send(server, f"{{\"action\":\"enroll_token\", \"token\":\"{str(data['token'])}\"}}")
 		core.add_token(data["uuid"], data["token"])
-		print("[RegisterClient] Registered client for %s." % peer)
+		logging.info(f"Registered client for {peer}.")
 	elif user_input == "no":
 		core.socket_send(server, "{\"action\":\"reject\"}")
-		core.err_handler.handle_error("RegisterClient", "User not allowed to register.", server)
+		logging.error("User not allowed to register.")
 
 
 @core.add_action("reestablish")
@@ -23,6 +23,6 @@ def reestablish_client(data, server):
 		if core.token_db["peer"] == token:
 			pass
 		else:
-			core.err_handler.handle_error("ReestablishClient", "Token not valid for peer.", server)
+			logging.error("Token not valid for peer.")
 	else:
-		core.err_handler.handle_error("ReestablishClient", "Peer not established.", server)
+		logging.error("Peer not established.")

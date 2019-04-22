@@ -1,9 +1,8 @@
-import json
-import core
+import json, core, logging
 
 class protocolHandler():
 	def __init__(self):
-		print("[ProtocolHandler] Intialised.")
+		logging.info("Initialised.")
 
 	def on_connect(self, server):
 		pass
@@ -30,11 +29,11 @@ class protocolHandler():
 		try:
 			json_line = json.loads(line)
 			if core.cfg_handler.config["server"]["debug"]:
-				print("[ValidateJSON-Debug] %s" % json_line)
+				logging.debug(f"JSON output: {json_line}")
 			return json_line
 		except ValueError as e:
-			print("[ValidateJSON] \"%s\" is not valid JSON." % line)
-			core.err_handler.handle_error("ValidateJSON", e, server)
+			logging.error(f"{line} is not valid JSON.")
+			logging.error(f"{e}")
 			return
 
 	# Checks if there was an action in the JSON, if there was, checks if it's in the function DB, failing that, errors.
@@ -43,13 +42,13 @@ class protocolHandler():
 		if "action" in line:
 			if line["action"] in core.mod_db:
 				if core.cfg_handler.config["server"]["debug"]:
-					print("[ValidateAction-Debug] Valid action \"%s\" provided." % line["action"])
+					logging.info(f"Valid JSON action {line['action']} provided.")
 				return core.mod_db[line["action"]]
 			else:
-				core.err_handler.handle_error("ValidateAction", "Action \"%s\" does not exist." % line["action"], server)
+				logging.error(f"JSON action \"{line['action']}\" does not exist.")
 				return
 		else:
-			core.err_handler.handle_error("ValidateAction", "No action was provided.", server)
+			logging.error("No JSON action was provided.")
 			return
 
 	# TODO: Data validation from patterns and input things.
@@ -58,6 +57,6 @@ class protocolHandler():
 
 	# Takes the function from the coreule DB and executes it with the data provided, passing the server over to the function as a parameter too.
 	def execute_action(self, action, data, server):
-		print("[ExecuteAction] Executing \"%s\" with data: \"%s\"." % (action, data))
+		logging.info(f"Executing \"{action}\" with \"{data}\".")
 		action(data, server)
 		pass

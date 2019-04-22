@@ -3,10 +3,10 @@
 # General imports.
 from twisted.internet import ssl, reactor, protocol, endpoints, error
 from twisted.protocols import basic
-import configparser, sys, os, re, imp
+import configparser, sys, os, re, imp, logging
 
 # Modules created for this project.
-import handlers.error, handlers.protocol, handlers.config, core
+import core
 
 py_regex = "(.+\.py)$"
 
@@ -17,7 +17,6 @@ def modules_in_dir(path):
 		if os.path.isfile(os.path.join(path, entry)):
 			matches = re.search(py_regex, entry)
 			if matches:
-				print("[ImportHandler] Importing \"%s\"." % (matches.groups()[0]))
 				result.add(matches.group(0))
 	return result
 
@@ -31,21 +30,36 @@ def import_dir(path):
 
 # This is the implementation of the actual socket system using Twisted. The protocol handler is used to actually deal with things, though.
 def main():
+	# Sets this to overwrite ./server.log with the log file contents of this session.
+	logging.basicConfig(filename="server.log",level=logging.DEBUG,filemode="w")
+	#logFormatter = logging.Formatter("%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")
+	logFormatter = logging.Formatter('[%(filename)s:%(lineno)s - %(funcName)s() - %(threadName)s] %(levelname)s - %(message)s')
+	rootLogger = logging.getLogger()
+	# Connects to the output.
+	fileHandler = logging.FileHandler("server.log")
+	fileHandler.setFormatter(logFormatter)
+	rootLogger.addHandler(fileHandler)
+
+	consoleHandler = logging.StreamHandler()
+	consoleHandler.setFormatter(logFormatter)
+	rootLogger.addHandler(consoleHandler)
+
+	# Class Definitions for Twisted
 	class NSTServer(basic.LineReceiver):
 		# Messages from here will be marked "NSTServer".
 		def connectionMade(self):
 			# TODO: Session handling.
 			self._peer = self.transport.getPeer()
-			print("[NSTServer] Client connected from %s:%d." % (self._peer.host, self._peer.port))
+			logging.info("Client connected from %s:%d." % (self._peer.host, self._peer.port))
 			core.proto_handler.on_connect(self)
 
 		def connectionLost(self, reason):
 			if reason.type == error.ConnectionAborted:
-				print("[NSTServer] Connection aborted by server.")
+				logging.error("Connection aborted by server.")
 			elif reason.type == error.ConnectionLost:
-				print("[NSTServer] Connection lost.")
+				logging.error("Connection lost.")
 			elif reason.type == error.ConnectionDone:
-				print("[NSTServer] Connection closed cleanly.")
+				logging.error("Connection closed cleanly.")
 
 		def lineReceived(self, line):
 			core.proto_handler.handle_line(line, self)
@@ -60,15 +74,14 @@ def main():
 	# Automatically loads all .py files as modules from ./modules.
 	import_dir("modules")
 
-	print("[Main] Initialising NSTServerFactory.")
 	factory = NSTServerFactory()
-	print("[Main] Binding reactor to port %s." % core.cfg_handler.config["server"]["port"])
+	logging.info("Binding reactor to port %s." % core.cfg_handler.config["server"]["port"])
 	with open('./keys/server.pem') as f:
 		certData = f.read()
 	certificate = ssl.PrivateCertificate.loadPEM(certData).options()
 	# openssl req -newkey rsa:2048 -nodes -keyout server.key -out server.crt
 	reactor.listenSSL(core.cfg_handler.config["server"]["port"], factory, certificate)
-	print("[Main] Running Reactor.")
+	logging.info("Running the reactor.")
 	reactor.run()
 
 if __name__ == '__main__':

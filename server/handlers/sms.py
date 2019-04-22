@@ -1,9 +1,9 @@
 from twilio.rest import Client
-import core
+import core, logging
 
 def init():
-	client = Client(core.cfg_handler.config["twilio"]["id"], core.cfg_handler.config["twilio"]["token])
-	print("[TwilioHandler] Initialised.")
+	client = Client(core.cfg_handler.config["twilio"]["id"], core.cfg_handler.config["twilio"]["token"])
+	logging.info("Initialised.")
 
 def notify_sms(msg_txt):
 	msg = client.messages.create(
