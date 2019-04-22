@@ -42,7 +42,7 @@ class protocolHandler():
 		if "action" in line:
 			if line["action"] in core.mod_db:
 				if core.cfg_handler.config["server"]["debug"]:
-					logging.info(f"Valid JSON action {line['action']} provided.")
+					logging.debug(f"Valid JSON action {line['action']} provided.")
 				return core.mod_db[line["action"]]
 			else:
 				logging.error(f"JSON action \"{line['action']}\" does not exist.")

@@ -12,7 +12,7 @@ class configHandler():
 			with open("config.json") as config_file:
 				self.config = json.load(config_file)
 			if self.config["server"]["debug"]:
-				logging.debug("Debug is enabled. Messages produced as a result of debug will have that suffixed to their system name.")
+				logging.debug("Debug is enabled.")
 				logging.debug("Contents of config: \"%s\"." % self.config)
 			logging.info("Loaded config.")
 		except:
