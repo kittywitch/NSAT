@@ -2,3 +2,4 @@
 client/.token
 server/.token_db
 server/server.log
+client/client.log

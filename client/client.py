@@ -1,55 +1,36 @@
 from twisted.internet import ssl, reactor, endpoints, defer, task
 from twisted.internet.protocol import ClientFactory, Protocol
 from twisted.protocols.basic import LineReceiver
-import uuid, json, os, hashlib, time
+import uuid, json, os, hashlib, time, core, logging, re, imp
 
-def load_token():
-	if os.path.isfile(".token"):
-		token_file = open(".token", "r")
-		token = token_file.read()
-		return token
-	else:
-		return None
+py_regex = "(.+\.py)$"
 
-def gen_token(id_in):
-	# Generates a token from a given UUID by salting it with the current time and a unique UUID and SHA512 hashing it, returns the result.
-	rand_uuid = str(uuid.uuid4())
-	time_now = time.time()
-	result = "%s%s%s" % (id_in, time_now, rand_uuid)
-	print(result)
-	return hashlib.sha512(result.encode("utf-8")).hexdigest()
+# These two functions are used for importing an entire directory automatically. Used for ./modules in this case.
+def modules_in_dir(path):
+	result = set()
+	for entry in os.listdir(path):
+		if os.path.isfile(os.path.join(path, entry)):
+			matches = re.search(py_regex, entry)
+			if matches:
+				result.add(matches.group(0))
+	return result
 
-def store_token(token):
-	return token
-
-def socket_send(client, data):
-	client.sendLine(data.encode("utf-8"))
+def import_dir(path):
+	for filename in sorted(modules_in_dir(path)):
+		search_path = os.path.join(os.getcwd(), path)
+		module_name, ext = os.path.splitext(filename)
+		fp, path_name, description = imp.find_module(module_name, [search_path,])
+		# This uses the lowest level module loading systems to load files pulled from a directory path.
+		module = imp.load_module(module_name, fp, path_name, description)
 
 class NSTClient(LineReceiver):
 	def connectionMade(self):
-		# check if token exists, load it
-		token = load_token()
-		# registration process
-		if token == None:
-			# creates the same UUID every time
-			r_id = str(uuid.uuid1(uuid.getnode()))
-			# generate the token
-			token = gen_token(r_id)
-			# sends it to the server
-			socket_send(self, "{\"action\":\"register\", \"uuid\":\"%s\", \"token\":\"%s\"}" % (r_id, token))
-		else:
-			r_id = uuid.uuid1(uuid.getnode())
-			socket_send(self, "{\"action\":\"register\", \"uuid\":\"%s\", \"token\":\"%s\"}" % (r_id, token))
+		core.proto_handler.on_connect(self)
 
 	def lineReceived(self, line):
 		jsonLine = json.loads(line)
 		# server tells the client to store the token
-		if jsonLine["action"] == "enroll_token" and load_token() == None:
-			token_file = open(".token", "w+")
-			token = jsonLine["token"]
-			token_file.write(token)
-			print("Registered token from server. Token: \"%s\"." % token)
-			token_file.close()
+		core.proto_handler.handle_line(line, self)
 
 
 class NSTClientFactory(ClientFactory):
@@ -64,6 +45,24 @@ class NSTClientFactory(ClientFactory):
         reactor.stop()
 
 def main():
+	logging.basicConfig(filename="client.log",level=logging.DEBUG,filemode="w")
+	#logFormatter = logging.Formatter("%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")
+	logFormatter = logging.Formatter('[%(filename)s:%(lineno)s - %(funcName)s() - %(threadName)s] %(levelname)s - %(message)s')
+	rootLogger = logging.getLogger()
+	# Connects to the output.
+	fileHandler = logging.FileHandler("client.log")
+	fileHandler.setFormatter(logFormatter)
+	rootLogger.addHandler(fileHandler)
+
+	consoleHandler = logging.StreamHandler()
+	consoleHandler.setFormatter(logFormatter)
+	rootLogger.addHandler(consoleHandler)
+
+	core.init()
+
+	# Automatically loads all .py files as modules from ./modules.
+	import_dir("modules")
+	
 	factory = NSTClientFactory()
 	reactor.connectSSL('127.0.0.1', 50000, factory, ssl.CertificateOptions(verify=False))
 	reactor.run()
