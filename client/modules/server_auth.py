@@ -2,8 +2,10 @@ import core, logging
 
 @core.add_action("enroll_token")
 def enroll_token(data, client):
-	if core.load_token() == None:
+	if core.uid == None or core.token == None:
 		token_file = open(".token", "w+")
+		core.uid = data['uuid']
+		core.token = data['token']
 		token_file.write(f"{{\"token\":\"{data['token']}\", \"uuid\":\"{data['uuid']}\"}}")
 		logging.info(f"Registered token from server. UUID: \"{data['uuid']}\", Token: \"{data['token']}\".")
 		token_file.close()

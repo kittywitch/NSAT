@@ -41,9 +41,9 @@ def init():
 	cfg_handler = handlers.config.configHandler()
 	cfg_handler.load_config()
 
-	global uuid
+	global uid
 	global token
-	uuid, token = load_token()
+	uid, token = load_token()
 
 	global proto_handler
 	proto_handler = handlers.protocol.protocolHandler()

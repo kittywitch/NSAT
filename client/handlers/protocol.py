@@ -6,7 +6,7 @@ class protocolHandler():
 
 	def on_connect(self, client):
 		# registration process
-		if core.token == None or core.uuid == None:
+		if core.token == None or core.uid == None:
 			# creates the same UUID every time
 			r_id = str(uuid.uuid1(uuid.getnode()))
 			# generate the token
@@ -15,7 +15,7 @@ class protocolHandler():
 			core.socket_send(client, "{\"action\":\"register\", \"uuid\":\"%s\", \"token\":\"%s\"}" % (r_id, token))
 		else:
 			r_id = uuid.uuid1(uuid.getnode())
-			core.socket_send(client, "{\"action\":\"reestablish\", \"uuid\":\"%s\", \"token\":\"%s\"}" % (core.uuid, core.token))
+			core.socket_send(client, "{\"action\":\"reestablish\", \"uuid\":\"%s\", \"token\":\"%s\"}" % (core.uid, core.token))
 
 	def handle_line(self, line, client):
 		logging.debug(line)
