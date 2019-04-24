@@ -37,11 +37,11 @@ class NSTClientFactory(ClientFactory):
     protocol = NSTClient
 
     def clientConnectionFailed(self, connector, reason):
-        print("connection failed: ", reason.getErrorMessage())
+        logging.error(f"Connection failed {reason.getErrorMessage()}")
         reactor.stop()
 
     def clientConnectionLost(self, connector, reason):
-        print("connection lost: ", reason.getErrorMessage())
+        logging.error(f"Connection lost: {reason.getErrorMessage()}")
         reactor.stop()
 
 def main():
@@ -64,7 +64,10 @@ def main():
 	import_dir("modules")
 	
 	factory = NSTClientFactory()
-	reactor.connectSSL('127.0.0.1', 50000, factory, ssl.CertificateOptions(verify=False))
+	security_form = "with certificate verification" if core.cfg_handler.config['client']['tls_verify'] else "without certificate verification"
+	logging.info(f"Connecting reactor to port {core.cfg_handler.config['client']['address']}:{core.cfg_handler.config['client']['port']} {security_form}.")
+	reactor.connectSSL(core.cfg_handler.config['client']['address'], core.cfg_handler.config['client']['port'], factory, ssl.CertificateOptions(verify=core.cfg_handler.config['client']['tls_verify']))
+	logging.info("Running the reactor.")
 	reactor.run()
 
 if __name__ == '__main__':

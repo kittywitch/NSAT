@@ -6,7 +6,13 @@ def init():
 	mod_db = {}
 	# Tokens database, backends to a file.
 	global token_db
-	token_db = {}
+	if os.path.isfile(".token_db"):
+		token_file = open(".token_db", "r+")
+		token_db = json.loads(token_file.read())
+		logging.info("Token DB opened.")
+		token_file.close()
+	else:
+		token_db = {}
 	# Handlers
 	global cfg_handler
 	cfg_handler = handlers.config.configHandler()
@@ -38,11 +44,11 @@ def add_action(name):
 def add_token(uuid, token):
 	# Adds a token to the database and the token database file.
 	# does the token DB file exist, if not, create it
-	if os.path.isfile(".token_file"):
+	if os.path.isfile(".token_db"):
 		token_db[uuid] = token
 		# read it, import the JSON data structures
 		token_file = open(".token_db", "r+")
-		tokens_obj = json.loads(token_file)
+		token_obj = json.loads(token_file.read())
 		# add the token
 		token_obj[uuid] = token
 		# overwrite the file

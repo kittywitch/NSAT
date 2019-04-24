@@ -5,10 +5,8 @@ class protocolHandler():
 		logging.info("Initialised.")
 
 	def on_connect(self, client):
-		# check if token exists, load it
-		token = core.load_token()
 		# registration process
-		if token == None:
+		if core.token == None or core.uuid == None:
 			# creates the same UUID every time
 			r_id = str(uuid.uuid1(uuid.getnode()))
 			# generate the token
@@ -17,9 +15,10 @@ class protocolHandler():
 			core.socket_send(client, "{\"action\":\"register\", \"uuid\":\"%s\", \"token\":\"%s\"}" % (r_id, token))
 		else:
 			r_id = uuid.uuid1(uuid.getnode())
-			core.socket_send(client, "{\"action\":\"register\", \"uuid\":\"%s\", \"token\":\"%s\"}" % (r_id, token))
+			core.socket_send(client, "{\"action\":\"reestablish\", \"uuid\":\"%s\", \"token\":\"%s\"}" % (core.uuid, core.token))
 
 	def handle_line(self, line, client):
+		logging.debug(line)
 		# Push the JSON to the JSON validator, which returns the decoded JSON if it doesn't fail, otherwise kills the client
 		json_line = self.validate_json(line, client)
 		if json_line:
