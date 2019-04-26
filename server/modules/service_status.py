@@ -5,7 +5,6 @@ import core
 
 @core.add_timer(60)
 def request_status():
-	print("hi")
 	for server in core.servers:
 		logging.info(f"Sent status update request to {server._peer.host}:{server._peer.port}")
 		core.socket_send(server, json.dumps({
