@@ -1,5 +1,8 @@
+# external
 from twilio.rest import Client
-import core, logging
+import logging
+# internal
+import core
 
 def init():
 	client = Client(core.config["twilio"]["id"], core.config["twilio"]["token"])

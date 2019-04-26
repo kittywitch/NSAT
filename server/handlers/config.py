@@ -1,11 +1,14 @@
-import logging, os, core, yaml
+# external
+import logging, os, yaml
+# internal
+import core
 
 class configHandler():
 	def __init__(self):
 		pass
 
 	def load_config(self):
-		# This is primarily for loading a JSON file into a variable for config purposes.
+		# This loads a YAML file into core.config
 		logging.info("Loading config from \"./config.yaml\".")
 		try:
 			with open(os.path.join(core.ex_dir, "config.yaml")) as config_file:

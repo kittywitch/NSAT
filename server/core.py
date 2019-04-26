@@ -1,42 +1,31 @@
-import logging, time, hashlib, handlers.config, handlers.protocol, handlers.sms, handlers.po, json, os, schedule, threading
+# external
+import logging, time, hashlib, json, os, schedule, threading, re, imp
+# internal
+import handlers.config, handlers.protocol, handlers.sms, handlers.po
 
-def init():
-	global servers
-	servers = []
-	global ex_dir
-	ex_dir = os.path.dirname(os.path.abspath( __file__ ))
-	# Modules Database, key => action, value => function
-	global mod_db
-	mod_db = {}
-	# Tokens database, backends to a file.
-	global token_db
-	if os.path.isfile(os.path.join(ex_dir, ".token_db")):
-		token_file = open(os.path.join(ex_dir, ".token_db"), "r+")
-		token_db = json.loads(token_file.read())
-		logging.info("Token DB opened.")
-		token_file.close()
-	else:
-		token_db = {}
-	# Handlers
-	cfg_handler = handlers.config.configHandler()
-	cfg_handler.load_config()
-	# sms handler requires config handler initialised
-	handlers.sms.init()
-	global notify_sms
-	notify_sms = handlers.sms.notify_sms
-	global notify_call
-	notify_call = handlers.sms.notify_call
-	handlers.po.init()
-	global notify_po
-	notify_po = handlers.po.notify_po
-	global proto_handler
-	proto_handler = handlers.protocol.protocolHandler()
+# this function checks for files with ".py" in the directory, then adds them to a list
+def modules_in_dir(path):
+	result = set()
+	for entry in os.listdir(path):
+		if os.path.isfile(os.path.join(path, entry)):
+			matches = re.search("(.+\.py)$", entry)
+			if matches:
+				result.add(matches.group(0))
+	return result
 
-# Provides an easy function for encoding data without being inline with other things, such as % style replacements.
+# this function uses imp.load_module to load those files somewhat manually, but, providing a wildcard import for a dir
+def import_dir(path):
+	for filename in sorted(modules_in_dir(path)):
+		search_path = os.path.join(os.getcwd(), path)
+		module_name, ext = os.path.splitext(filename)
+		fp, path_name, description = imp.find_module(module_name, [search_path,])
+		module = imp.load_module(module_name, fp, path_name, description)
+
+# provides an easy function for encoding data without being inline with other things, such as % style replacements.
 def socket_send(server, data):
 	server.sendLine(data.encode("utf-8"))
 
-# This implements the ModuleHandler, this uses decorators, so this is accessed by @core.add_action(name) before a function definition for a module.
+# this implements the ModuleHandler, this uses decorators, so this is accessed by @core.add_action(name) before a function definition for a module.
 def add_action(name):
 	def wrapper(function):
 		mod_db[name] = function
@@ -44,6 +33,7 @@ def add_action(name):
 		return function
 	return wrapper
 
+# this starts the timer through decorators. TODO: make it so timers can be started and then repeatedly ran from core.py instead of within modules
 def add_timer(time):
 	def wrapper(function):
 		first_timer = threading.Timer(time, function)
@@ -54,7 +44,7 @@ def add_timer(time):
 	return wrapper
 
 def add_token(uuid, token):
-	# Adds a token to the database and the token database file.
+	# adds a token to the database and the token database file.
 	# does the token DB file exist, if not, create it
 	if os.path.isfile(os.path.join(ex_dir, ".token_db")):
 		token_db[uuid] = token
@@ -74,3 +64,38 @@ def add_token(uuid, token):
 		token_file = open(os.path.join(ex_dir, ".token_db"), "w+")
 		token_file.write(json.dumps(token_db))
 		logging.info("Added token for \"%s\"." % uuid)
+
+def init():
+	# server list, stores NSTServer objects
+	global servers
+	servers = []
+	# executable directory, the directory this file is within
+	global ex_dir
+	ex_dir = os.path.dirname(os.path.abspath( __file__ ))
+	# modules database, key => action, value => function
+	global mod_db
+	mod_db = {}
+	# tokens database, backends to a file.
+	global token_db
+	if os.path.isfile(os.path.join(ex_dir, ".token_db")):
+		token_file = open(os.path.join(ex_dir, ".token_db"), "r+")
+		token_db = json.loads(token_file.read())
+		logging.info("Token DB opened.")
+		token_file.close()
+	else:
+		token_db = {}
+	# initialises the value of core.config
+	cfg_handler = handlers.config.configHandler()
+	cfg_handler.load_config()
+	# sms and po handlers require core.config
+	handlers.sms.init()
+	global notify_sms
+	notify_sms = handlers.sms.notify_sms
+	global notify_call
+	notify_call = handlers.sms.notify_call
+	handlers.po.init()
+	global notify_po
+	notify_po = handlers.po.notify_po
+	# protocol implementation, layer above NSTServer
+	global proto_handler
+	proto_handler = handlers.protocol.protocolHandler()

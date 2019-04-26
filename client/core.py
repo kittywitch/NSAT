@@ -1,4 +1,25 @@
-import logging, time, hashlib, handlers.config, handlers.protocol, json, os, uuid
+# external
+import logging, time, hashlib, json, os, uuid, re, imp
+# internal
+import handlers.config, handlers.protocol
+
+# this function checks for files with ".py" in the directory, then adds them to a list
+def modules_in_dir(path):
+	result = set()
+	for entry in os.listdir(path):
+		if os.path.isfile(os.path.join(path, entry)):
+			matches = re.search("(.+\.py)$", entry)
+			if matches:
+				result.add(matches.group(0))
+	return result
+
+# this function uses imp.load_module to load those files somewhat manually, but, providing a wildcard import for a dir
+def import_dir(path):
+	for filename in sorted(modules_in_dir(path)):
+		search_path = os.path.join(os.getcwd(), path)
+		module_name, ext = os.path.splitext(filename)
+		fp, path_name, description = imp.find_module(module_name, [search_path,])
+		module = imp.load_module(module_name, fp, path_name, description)
 
 # Provides an easy function for encoding data without being inline with other things, such as % style replacements.
 def socket_send(client, data):

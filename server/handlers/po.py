@@ -1,5 +1,7 @@
-import http.client, urllib
-import core, logging
+# external
+import http.client, urllib, logging
+# internal
+import core
 
 def init():
 	client = http.client.HTTPSConnection("api.pushover.net:443")

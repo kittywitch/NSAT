@@ -1,4 +1,7 @@
-import json, core, logging
+# external
+import json, logging
+# internal
+import core
 
 class protocolHandler():
 	def __init__(self):

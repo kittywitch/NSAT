@@ -1,4 +1,7 @@
-import core, logging, json
+# external
+import logging, json
+# internal
+import core
 
 @core.add_action("register")
 def register_client(data, server):

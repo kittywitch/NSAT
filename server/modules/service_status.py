@@ -1,4 +1,7 @@
-import core, logging, json, threading
+# external
+import logging, json, threading
+# internal
+import core
 
 @core.add_timer(60)
 def request_status():
