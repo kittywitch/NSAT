@@ -8,8 +8,6 @@ def init():
 	# Modules Database, key => action, value => function
 	global mod_db
 	mod_db = {}
-	global timer_db
-	timer_db = {}
 	# Tokens database, backends to a file.
 	global token_db
 	if os.path.isfile(os.path.join(ex_dir, ".token_db")):
