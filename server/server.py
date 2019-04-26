@@ -51,6 +51,7 @@ def main():
 		# Messages from here will be marked "NSTServer".
 		def connectionMade(self):
 			# TODO: Session handling.
+			core.servers.append(self)
 			self._peer = self.transport.getPeer()
 			logging.info(f"Client connected from {self._peer.host}:{self._peer.port}.")
 			core.proto_handler.on_connect(self)

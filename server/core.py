@@ -1,11 +1,15 @@
-import logging, time, hashlib, handlers.config, handlers.protocol, handlers.sms, handlers.po, json, os
+import logging, time, hashlib, handlers.config, handlers.protocol, handlers.sms, handlers.po, json, os, schedule, threading
 
 def init():
+	global servers
+	servers = []
 	global ex_dir
 	ex_dir = os.path.dirname(os.path.abspath( __file__ ))
 	# Modules Database, key => action, value => function
 	global mod_db
 	mod_db = {}
+	global timer_db
+	timer_db = {}
 	# Tokens database, backends to a file.
 	global token_db
 	if os.path.isfile(os.path.join(ex_dir, ".token_db")):
@@ -38,7 +42,16 @@ def socket_send(server, data):
 def add_action(name):
 	def wrapper(function):
 		mod_db[name] = function
-		logging.info("Loaded function \"%s\"." % name)
+		logging.info(f"Loaded function {name}.")
+		return function
+	return wrapper
+
+def add_timer(time):
+	def wrapper(function):
+		first_timer = threading.Timer(time, function)
+		first_timer.daemon = True
+		first_timer.start()
+		logging.info(f"Loaded timer for {function} that runs every {time} seconds.")
 		return function
 	return wrapper
 
