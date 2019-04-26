@@ -31,12 +31,14 @@ def import_dir(path):
 # This is the implementation of the actual socket system using Twisted. The protocol handler is used to actually deal with things, though.
 def main():
 	# Sets this to overwrite ./server.log with the log file contents of this session.
-	logging.basicConfig(filename="server.log",level=logging.DEBUG,filemode="w")
+	logging.basicConfig(level=logging.DEBUG,filemode="w")
 	#logFormatter = logging.Formatter("%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")
-	logFormatter = logging.Formatter('[%(filename)s:%(lineno)s - %(funcName)s() - %(threadName)s] %(levelname)s - %(message)s')
+	logFormatter = logging.Formatter('[%(asctime)s - %(levelname)s] [%(filename)s:%(lineno)s - %(funcName)s() - %(threadName)s] %(message)s')
 	rootLogger = logging.getLogger()
+	# remove the default logger
+	rootLogger.handlers = []
 	# Connects to the output.
-	fileHandler = logging.FileHandler("server.log")
+	fileHandler = logging.FileHandler(os.path.join(os.path.dirname(os.path.abspath( __file__ )), "server.log"))
 	fileHandler.setFormatter(logFormatter)
 	rootLogger.addHandler(fileHandler)
 
@@ -50,7 +52,7 @@ def main():
 		def connectionMade(self):
 			# TODO: Session handling.
 			self._peer = self.transport.getPeer()
-			logging.info("Client connected from %s:%d." % (self._peer.host, self._peer.port))
+			logging.info(f"Client connected from {self._peer.host}:{self._peer.port}.")
 			core.proto_handler.on_connect(self)
 
 		def connectionLost(self, reason):
@@ -75,12 +77,12 @@ def main():
 	import_dir("modules")
 
 	factory = NSTServerFactory()
-	logging.info(f"Binding reactor to port {core.cfg_handler.config['server']['port']}.")
+	logging.info(f"Binding reactor to port {core.config['server']['port']}.")
 	with open('./keys/server.pem') as f:
 		certData = f.read()
 	certificate = ssl.PrivateCertificate.loadPEM(certData).options()
 	# openssl req -newkey rsa:2048 -nodes -keyout server.key -out server.crt
-	reactor.listenSSL(core.cfg_handler.config["server"]["port"], factory, certificate)
+	reactor.listenSSL(core.config["server"]["port"], factory, certificate)
 	logging.info("Running the reactor.")
 	reactor.run()
 

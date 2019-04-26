@@ -8,8 +8,8 @@ def init():
 def notify_po(msg):
 	client.request("POST", "/1/messages.json",
 	urllib.parse.urlencode({
-		"token": core.cfg_handler.config["pushover"]["token"],
-		"user": core.cfg_handler.config["pushover"]["user"],
+		"token": core.config["pushover"]["token"],
+		"user": core.config["pushover"]["user"],
 		"message": msg,
 	}), { "Content-type": "application/x-www-form-urlencoded" })
 	client.getresponse()

@@ -1,20 +1,21 @@
 import logging, time, hashlib, handlers.config, handlers.protocol, handlers.sms, handlers.po, json, os
 
 def init():
+	global ex_dir
+	ex_dir = os.path.dirname(os.path.abspath( __file__ ))
 	# Modules Database, key => action, value => function
 	global mod_db
 	mod_db = {}
 	# Tokens database, backends to a file.
 	global token_db
-	if os.path.isfile(".token_db"):
-		token_file = open(".token_db", "r+")
+	if os.path.isfile(os.path.join(ex_dir, ".token_db")):
+		token_file = open(os.path.join(ex_dir, ".token_db"), "r+")
 		token_db = json.loads(token_file.read())
 		logging.info("Token DB opened.")
 		token_file.close()
 	else:
 		token_db = {}
 	# Handlers
-	global cfg_handler
 	cfg_handler = handlers.config.configHandler()
 	cfg_handler.load_config()
 	# sms handler requires config handler initialised
@@ -44,10 +45,10 @@ def add_action(name):
 def add_token(uuid, token):
 	# Adds a token to the database and the token database file.
 	# does the token DB file exist, if not, create it
-	if os.path.isfile(".token_db"):
+	if os.path.isfile(os.path.join(ex_dir, ".token_db")):
 		token_db[uuid] = token
 		# read it, import the JSON data structures
-		token_file = open(".token_db", "r+")
+		token_file = open(os.path.join(ex_dir, ".token_db"), "r+")
 		token_obj = json.loads(token_file.read())
 		# add the token
 		token_obj[uuid] = token
@@ -59,6 +60,6 @@ def add_token(uuid, token):
 	else:
 		token_db[uuid] = token
 		# read it, import the JSON data structures
-		token_file = open(".token_db", "w+")
+		token_file = open(os.path.join(ex_dir, ".token_db"), "w+")
 		token_file.write(json.dumps(token_db))
 		logging.info("Added token for \"%s\"." % uuid)

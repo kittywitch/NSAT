@@ -12,10 +12,18 @@ class protocolHandler():
 			# generate the token
 			token = core.gen_token(r_id)
 			# sends it to the server
-			core.socket_send(client, "{\"action\":\"register\", \"uuid\":\"%s\", \"token\":\"%s\"}" % (r_id, token))
+			core.socket_send(client, json.dumps({
+				"action":"register",
+				"uuid":r_id,
+				"token":token
+			}))
 		else:
 			r_id = uuid.uuid1(uuid.getnode())
-			core.socket_send(client, "{\"action\":\"reestablish\", \"uuid\":\"%s\", \"token\":\"%s\"}" % (core.uid, core.token))
+			core.socket_send(client, json.dumps({
+				"action":"reestablish",
+				"uuid":core.uid,
+				"token":core.token
+			}))
 
 	def handle_line(self, line, client):
 		logging.debug(line)
@@ -39,7 +47,7 @@ class protocolHandler():
 		# Messages from here will be marked "ValidateJSON".
 		try:
 			json_line = json.loads(line)
-			if core.cfg_handler.config["client"]["debug"]:
+			if core.config["client"]["debug"]:
 				logging.debug(f"JSON output: {json_line}")
 			return json_line
 		except ValueError as e:
@@ -52,7 +60,7 @@ class protocolHandler():
 		# Messages from here will be marked "ValidateAction".
 		if "action" in line:
 			if line["action"] in core.mod_db:
-				if core.cfg_handler.config["client"]["debug"]:
+				if core.config["client"]["debug"]:
 					logging.debug(f"Valid JSON action {line['action']} provided.")
 				return core.mod_db[line["action"]]
 			else:

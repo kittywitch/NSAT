@@ -45,12 +45,14 @@ class NSTClientFactory(ClientFactory):
         reactor.stop()
 
 def main():
-	logging.basicConfig(filename="client.log",level=logging.DEBUG,filemode="w")
+	logging.basicConfig(level=logging.DEBUG,filemode="w")
 	#logFormatter = logging.Formatter("%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")
 	logFormatter = logging.Formatter('[%(filename)s:%(lineno)s - %(funcName)s() - %(threadName)s] %(levelname)s - %(message)s')
 	rootLogger = logging.getLogger()
+	# remove the default logger
+	rootLogger.handlers = []
 	# Connects to the output.
-	fileHandler = logging.FileHandler("client.log")
+	fileHandler = logging.FileHandler(os.path.join(os.path.dirname(os.path.abspath( __file__ )), "client.log"))
 	fileHandler.setFormatter(logFormatter)
 	rootLogger.addHandler(fileHandler)
 
@@ -64,9 +66,9 @@ def main():
 	import_dir("modules")
 	
 	factory = NSTClientFactory()
-	security_form = "with certificate verification" if core.cfg_handler.config['client']['tls_verify'] else "without certificate verification"
-	logging.info(f"Connecting reactor to port {core.cfg_handler.config['client']['address']}:{core.cfg_handler.config['client']['port']} {security_form}.")
-	reactor.connectSSL(core.cfg_handler.config['client']['address'], core.cfg_handler.config['client']['port'], factory, ssl.CertificateOptions(verify=core.cfg_handler.config['client']['tls_verify']))
+	security_form = "with certificate verification" if core.config['client']['tls_verify'] else "without certificate verification"
+	logging.info(f"Connecting reactor to port {core.config['client']['address']}:{core.config['client']['port']} {security_form}.")
+	reactor.connectSSL(core.config['client']['address'], core.config['client']['port'], factory, ssl.CertificateOptions(verify=core.config['client']['tls_verify']))
 	logging.info("Running the reactor.")
 	reactor.run()
 

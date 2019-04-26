@@ -5,8 +5,8 @@ def socket_send(client, data):
 	client.sendLine(data.encode("utf-8"))
 
 def load_token():
-	if os.path.isfile(".token"):
-		token_file = open(".token", "r")
+	if os.path.isfile(os.path.join(ex_dir, ".token")):
+		token_file = open(os.path.join(ex_dir, ".token"), "r")
 		token_opts = json.loads(token_file.read())
 		logging.info(f"Loaded {token_opts}")
 		return (token_opts["uuid"], token_opts["token"])
@@ -33,17 +33,18 @@ def add_action(name):
 	return wrapper
 
 def init():
+	global ex_dir
+	ex_dir = os.path.dirname(os.path.abspath( __file__ ))
 	# Modules Database, key => action, value => function
 	global mod_db
 	mod_db = {}
-	# Handlers
-	global cfg_handler
+	# initialises core.config
 	cfg_handler = handlers.config.configHandler()
 	cfg_handler.load_config()
-
+	# loads token from file for reestablish
 	global uid
 	global token
 	uid, token = load_token()
-
+	# protocol handler
 	global proto_handler
 	proto_handler = handlers.protocol.protocolHandler()

@@ -1,12 +1,15 @@
-import core, logging
+import core, logging, json
 
 @core.add_action("enroll_token")
 def enroll_token(data, client):
 	if core.uid == None or core.token == None:
-		token_file = open(".token", "w+")
+		token_file = open(os.path.join(core.ex_dir, ".token"), "w+")
 		core.uid = data['uuid']
 		core.token = data['token']
-		token_file.write(f"{{\"token\":\"{data['token']}\", \"uuid\":\"{data['uuid']}\"}}")
+		token_file.write(json.dumps({
+			"token":data["token"],
+			"uuid":data["uuid"]
+		}))
 		logging.info(f"Registered token from server. UUID: \"{data['uuid']}\", Token: \"{data['token']}\".")
 		token_file.close()
 

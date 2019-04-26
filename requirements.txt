@@ -1,4 +1,5 @@
 pyopenssl
+pyyaml
 twisted
 configparser
 schedule

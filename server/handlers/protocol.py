@@ -28,7 +28,7 @@ class protocolHandler():
 		# Messages from here will be marked "ValidateJSON".
 		try:
 			json_line = json.loads(line)
-			if core.cfg_handler.config["server"]["debug"]:
+			if core.config["server"]["debug"]:
 				logging.debug(f"JSON output: {json_line}")
 			return json_line
 		except ValueError as e:
@@ -41,7 +41,7 @@ class protocolHandler():
 		# Messages from here will be marked "ValidateAction".
 		if "action" in line:
 			if line["action"] in core.mod_db:
-				if core.cfg_handler.config["server"]["debug"]:
+				if core.config["server"]["debug"]:
 					logging.debug(f"Valid JSON action {line['action']} provided.")
 				return core.mod_db[line["action"]]
 			else:
