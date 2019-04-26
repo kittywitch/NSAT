@@ -22,6 +22,7 @@ class NSTServer(basic.LineReceiver):
 			logging.error("Connection lost.")
 		elif reason.type == error.ConnectionDone:
 			logging.error("Connection closed cleanly.")
+		core.servers.remove(self)
 
 	def lineReceived(self, line):
 		core.proto_handler.handle_line(line, self)
