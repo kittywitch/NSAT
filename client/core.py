@@ -1,5 +1,5 @@
 # external
-import logging, time, hashlib, json, os, uuid, re, imp
+import logging, time, hashlib, json, os, uuid, re, imp, inspect
 # internal
 import handlers.config, handlers.protocol
 
@@ -47,9 +47,11 @@ def store_token(token):
 	
 # This implements the ModuleHandler, this uses decorators, so this is accessed by @core.add_action(name) before a function definition for a module.
 def add_action(name):
+	frame = inspect.stack()[1]
+	filename = os.path.relpath(frame[0].f_code.co_filename, ex_dir)
 	def wrapper(function):
 		mod_db[name] = function
-		logging.info("Loaded function \"%s\"." % name)
+		logging.info(f"Loaded function \"{function}\" as \"{name}\" from \"{filename}\".")
 		return function
 	return wrapper
 

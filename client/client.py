@@ -1,5 +1,5 @@
 # external
-from twisted.internet import endpoints, defer, task
+from twisted.internet import endpoints, defer, task, reactor
 from twisted.internet.protocol import ClientFactory, Protocol
 from twisted.protocols.basic import LineReceiver
 import logging, json
