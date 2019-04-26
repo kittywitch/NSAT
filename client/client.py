@@ -47,7 +47,7 @@ class NSTClientFactory(ClientFactory):
 def main():
 	logging.basicConfig(level=logging.DEBUG,filemode="w")
 	#logFormatter = logging.Formatter("%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")
-	logFormatter = logging.Formatter('[%(filename)s:%(lineno)s - %(funcName)s() - %(threadName)s] %(levelname)s - %(message)s')
+	logFormatter = logging.Formatter('[%(asctime)s - %(levelname)s] [%(filename)s:%(lineno)s - %(funcName)s() - %(threadName)s] %(message)s')
 	rootLogger = logging.getLogger()
 	# remove the default logger
 	rootLogger.handlers = []
