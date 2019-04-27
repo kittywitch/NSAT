@@ -32,9 +32,9 @@ def main():
 	core.import_dir(os.path.join(os.path.dirname(os.path.abspath( __file__ )), "modules"))
 	
 	factory = client.NSTClientFactory()
-	security_form = "with certificate verification" if core.config['client']['tls_verify'] else "without certificate verification"
-	logging.info(f"Connecting reactor to port {core.config['client']['address']}:{core.config['client']['port']} {security_form}.")
-	reactor.connectSSL(core.config['client']['address'], core.config['client']['port'], factory, ssl.CertificateOptions(verify=core.config['client']['tls_verify']))
+	security_form = "with certificate verification" if core.config.client.tls_verify else "without certificate verification"
+	logging.info(f"Connecting reactor to port {core.config.client.address}:{core.config.client.port} {security_form}.")
+	reactor.connectSSL(core.config.client.address, core.config.client.port, factory, ssl.CertificateOptions(verify=core.config.client.tls_verify))
 	logging.info("Running the reactor.")
 	reactor.run()
 

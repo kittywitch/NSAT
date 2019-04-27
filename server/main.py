@@ -29,12 +29,12 @@ def main():
 	core.import_dir(os.path.join(os.path.dirname(os.path.abspath( __file__ )), "modules"))
 
 	factory = server.NSTServerFactory()
-	logging.info(f"Binding reactor to port {core.config['server']['port']}.")
 	with open(os.path.join(os.path.dirname(os.path.abspath( __file__ )), "keys/server.pem")) as f:
 		certData = f.read()
 	certificate = ssl.PrivateCertificate.loadPEM(certData).options()
 	# openssl req -newkey rsa:2048 -nodes -keyout server.key -out server.crt
-	reactor.listenSSL(core.config["server"]["port"], factory, certificate)
+	logging.info(f"Binding reactor to port {core.config.server.port}.")
+	reactor.listenSSL(core.config.server.port, factory, certificate)
 	logging.info("Running the reactor.")
 	reactor.run()
 

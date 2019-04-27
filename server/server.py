@@ -1,19 +1,30 @@
 # external
 from twisted.internet import protocol, endpoints, error
 from twisted.protocols import basic
-import logging
+import logging, json
 # internal
 import core
+
+# unserialises the JSON recieved
+def deserialise(line, server):
+		try:
+			data = json.loads(line)
+			if core.config.server.debug:
+				logging.debug(f"Received \"{data}\" from \"{server._sockaddr}\".")
+			return data
+		except Exception as e:
+			logging.error(f"Received \"{line}\" from \"{server._sockaddr}\" is not valid JSON.")
+			logging.error(f"Error: \"{e}\".")
+			return e
 
 # Class Definitions for Twisted
 class NSTServer(basic.LineReceiver):
 	# Messages from here will be marked "NSTServer".
 	def connectionMade(self):
-		# TODO: Session handling.
 		core.servers.append(self)
 		self._peer = self.transport.getPeer()
-		logging.info(f"Client connected from {self._peer.host}:{self._peer.port}.")
-		core.proto_handler.on_connect(self)
+		self._sockaddr = f"{self._peer.host}:{self._peer.port}"
+		logging.info(f"Client connected from {self._sockaddr}.")
 
 	def connectionLost(self, reason):
 		if reason.type == error.ConnectionAborted:
@@ -25,7 +36,20 @@ class NSTServer(basic.LineReceiver):
 		core.servers.remove(self)
 
 	def lineReceived(self, line):
-		core.proto_handler.handle_line(line, self)
+		# takes the JSON and turns it into a python dict OR returns the error
+		unsafe_data = deserialise(line, self)
+		# checking if the type returned is a dictionary and not an exception
+		if isinstance(unsafe_data, dict):
+			data = unsafe_data
+		else:
+			return
+		# action checking
+		unsafe_action = core.get_action(data["action"])
+		if callable(unsafe_action):
+			action = unsafe_action
+			action(data, self)
+		else:
+			return
 
 class NSTServerFactory(protocol.Factory):
 	protocol = NSTServer

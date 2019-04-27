@@ -4,3 +4,4 @@ twisted
 configparser
 service_identity
 twilio
+# if on windows, pywin32
