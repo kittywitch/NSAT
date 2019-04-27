@@ -16,8 +16,8 @@ def request_status():
 
 @core.add_action("receive_status")
 def receive_status(data, server):
-	if core.capacities["sms"]:
+	if core.capabilities["sms"]:
 		pass
-	if core.capacities["twilio"]:
+	if core.capabilities["twilio"]:
 		pass
 	print(data)
