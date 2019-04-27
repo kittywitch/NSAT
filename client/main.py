@@ -29,7 +29,7 @@ def main():
 	core.init()
 
 	# Automatically loads all .py files as modules from ./modules.
-	core.import_dir("modules")
+	core.import_dir(os.path.join(os.path.dirname(os.path.abspath( __file__ )), "modules"))
 	
 	factory = client.NSTClientFactory()
 	security_form = "with certificate verification" if core.config['client']['tls_verify'] else "without certificate verification"

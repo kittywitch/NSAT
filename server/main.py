@@ -26,11 +26,11 @@ def main():
 	core.init()
 
 	# Automatically loads all .py files as modules from ./modules.
-	core.import_dir("modules")
+	core.import_dir(os.path.join(os.path.dirname(os.path.abspath( __file__ )), "modules"))
 
 	factory = server.NSTServerFactory()
 	logging.info(f"Binding reactor to port {core.config['server']['port']}.")
-	with open('./keys/server.pem') as f:
+	with open(os.path.join(os.path.dirname(os.path.abspath( __file__ )), "keys/server.pem")) as f:
 		certData = f.read()
 	certificate = ssl.PrivateCertificate.loadPEM(certData).options()
 	# openssl req -newkey rsa:2048 -nodes -keyout server.key -out server.crt

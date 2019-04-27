@@ -16,4 +16,8 @@ def request_status():
 
 @core.add_action("receive_status")
 def receive_status(data, server):
+	if "pushover" in core.capacities
+		pass
+	if "twilio" in core.capacities
+		pass
 	print(data)

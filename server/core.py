@@ -31,7 +31,7 @@ def add_action(name):
 	filename = os.path.relpath(frame[0].f_code.co_filename, ex_dir)
 	def wrapper(function):
 		mod_db[name] = function
-		logging.info(f"Loaded function {function} as {name} from \"{filename}\".")
+		logging.info(f"Loaded function \"{function}\" as \"{name}\" from \"{filename}\".")
 		return function
 	return wrapper
 
@@ -69,7 +69,19 @@ def add_token(uuid, token):
 		token_file.write(json.dumps(token_db))
 		logging.info("Added token for \"%s\"." % uuid)
 
+def determine_capacities():
+	# checks if the keys exist in config["twilio"] required for twilio and checks that their value isn't None, i.e. empty
+	if all(k in config["twilio"] for k in ["id", "token", "in", "out"]) and all(value is not None for value in config["twilio"].values()):
+		capacities.append("sms")
+	# checks if the keys exist in config["pushover"] required for pushover and checks that their value isn't None, i.e. empty
+	if all(k in config["pushover"] for k in ["user", "token"]) and all(value is not None for value in config["pushover"].values()):
+		capacities.append("pushover")
+	logging.info(f"Registered {capacities}.")
+
 def init():
+	# shows what config capacities the server has
+	global capacities
+	capacities = []
 	# server list, stores NSTServer objects
 	global servers
 	servers = []
@@ -103,3 +115,4 @@ def init():
 	# protocol implementation, layer above NSTServer
 	global proto_handler
 	proto_handler = handlers.protocol.protocolHandler()
+	determine_capacities()
