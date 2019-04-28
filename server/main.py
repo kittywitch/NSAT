@@ -7,7 +7,7 @@ import logging, os, threading, coloredlogs
 import core, server
 
 def main():
-	threading.current_thread().name = 'NSAT'
+	threading.current_thread().name = 'NSATServer'
 	# Sets up a debug level logger that overwrites the file
 	logging.basicConfig(level=logging.DEBUG,filemode="w")
 	logFormatter = logging.Formatter("[%(asctime)s - %(levelname)s] [%(filename)s:%(lineno)s - %(funcName)s() - %(threadName)s] %(message)s", "%Y-%m-%d %H:%M:%S")
@@ -19,7 +19,7 @@ def main():
 	fileHandler.setFormatter(logFormatter)
 	rootLogger.addHandler(fileHandler)
 	# Hook the logger up to the console
-	coloredlogs.install(level='DEBUG')
+	coloredlogs.install(level='DEBUG',fmt="[%(asctime)s - %(levelname)s] [%(filename)s:%(lineno)s - %(funcName)s() - %(threadName)s] %(message)s")
 
 	print("""                                    
 

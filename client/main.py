@@ -9,6 +9,7 @@ import uuid, json, os, hashlib, time, logging, coloredlogs
 import core, client
 
 def main():
+	threading.current_thread().name = 'NSATClient'
 	# Sets up a debug level logger that overwrites the file
 	logging.basicConfig(level=logging.DEBUG,filemode="w")
 	# fancy: [2019-04-26 12:38:53,919 - INFO] [core.py:37 - init() - MainThread] Token DB opened.
@@ -21,7 +22,7 @@ def main():
 	fileHandler.setFormatter(logFormatter)
 	rootLogger.addHandler(fileHandler)
 	# Hook the logger up to the console
-	coloredlogs.install(level='DEBUG')
+	coloredlogs.install(level='DEBUG', fmt="[%(asctime)s - %(levelname)s] [%(filename)s:%(lineno)s - %(funcName)s() - %(threadName)s] %(message)s")
 
 	print("""                                    
 
