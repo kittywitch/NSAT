@@ -25,7 +25,7 @@ A python3 network security analytics tool.
 ### Linux
 ```
 sudo apt install python3 python3-dev python3-setuptools python3-pip
-pip install pyopenssl pyyaml twisted configparser service_identity twilio coloredlogs
+pip3 install pyopenssl pyyaml twisted configparser service_identity twilio coloredlogs
 ```
 
 ### Windows
