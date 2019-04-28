@@ -25,7 +25,7 @@ A python3 network security analytics tool.
 ### Linux
 ```
 sudo apt install python3 python3-dev python3-setuptools python3-pip
-pip install pyopenssl pyyaml twisted configparser service_identity twilio
+pip install pyopenssl pyyaml twisted configparser service_identity twilio coloredlogs
 ```
 
 ### Windows
@@ -34,7 +34,7 @@ Download [Python 3.7.3](https://www.python.org/downloads/release/python-373/)'s 
 Download [Build Tools for Visual Studio 2019](https://visualstudio.microsoft.com/downloads/) and install the Visual C++ build tools. Reboot.
 
 ```
-pip install pyopenssl pyyaml twisted configparser service_identity twilio pywin32
+pip install pyopenssl pyyaml twisted configparser service_identity twilio coloredlogs pywin32
 ```
 
 ## Self-signed TLS setup

@@ -4,4 +4,5 @@ twisted
 configparser
 service_identity
 twilio
+coloredlogs
 # if on windows, pywin32

@@ -2,7 +2,7 @@
 
 # external
 from twisted.internet import ssl, reactor
-import logging, os, threading
+import logging, os, threading, coloredlogs
 # internal
 import core, server
 
@@ -19,9 +19,7 @@ def main():
 	fileHandler.setFormatter(logFormatter)
 	rootLogger.addHandler(fileHandler)
 	# Hook the logger up to the console
-	consoleHandler = logging.StreamHandler()
-	consoleHandler.setFormatter(logFormatter)
-	rootLogger.addHandler(consoleHandler)
+	coloredlogs.install(level='DEBUG')
 
 	print("""                                    
 

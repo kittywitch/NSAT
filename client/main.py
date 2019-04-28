@@ -4,7 +4,7 @@
 from twisted.internet import ssl, reactor, endpoints, defer, task
 from twisted.internet.protocol import ClientFactory, Protocol
 from twisted.protocols.basic import LineReceiver
-import uuid, json, os, hashlib, time, logging
+import uuid, json, os, hashlib, time, logging, coloredlogs
 # internal
 import core, client
 
@@ -21,9 +21,7 @@ def main():
 	fileHandler.setFormatter(logFormatter)
 	rootLogger.addHandler(fileHandler)
 	# Hook the logger up to the console
-	consoleHandler = logging.StreamHandler()
-	consoleHandler.setFormatter(logFormatter)
-	rootLogger.addHandler(consoleHandler)
+	coloredlogs.install(level='DEBUG')
 
 	print("""                                    
 
