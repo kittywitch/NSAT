@@ -19,7 +19,6 @@ def deserialise(line, server):
 
 # Class Definitions for Twisted
 class NSTServer(basic.LineReceiver):
-	# Messages from here will be marked "NSTServer".
 	def connectionMade(self):
 		core.servers.append(self)
 		self._peer = self.transport.getPeer()

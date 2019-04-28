@@ -12,7 +12,7 @@ def main():
 	# Sets up a debug level logger that overwrites the file
 	logging.basicConfig(level=logging.DEBUG,filemode="w")
 	# fancy: [2019-04-26 12:38:53,919 - INFO] [core.py:37 - init() - MainThread] Token DB opened.
-	logFormatter = logging.Formatter('[%(asctime)s - %(levelname)s] [%(filename)s:%(lineno)s - %(funcName)s() - %(threadName)s] %(message)s')
+	logFormatter = logging.Formatter("[%(asctime)s - %(levelname)s] [%(filename)s:%(lineno)s - %(funcName)s() - %(threadName)s] %(message)s", "%Y-%m-%d %H:%M:%S")
 	rootLogger = logging.getLogger()
 	# Remove the default logger.
 	rootLogger.handlers = []
@@ -24,6 +24,18 @@ def main():
 	consoleHandler = logging.StreamHandler()
 	consoleHandler.setFormatter(logFormatter)
 	rootLogger.addHandler(consoleHandler)
+
+	print("""                                    
+
+888888ba  .d88888b   .d888888  d888888P 
+88    `8b 88.    "' d8'    88     88    
+88     88 `Y88888b. 88aaaaa88a    88    
+88     88       `8b 88     88     88    
+88     88 d8'   .8P 88     88     88    
+dP     dP  Y88888P  88     88     dP        
+		                   
+A python3 network service analytics tool - client section.
+""")
 
 	# Shared variables between files.
 	core.init()
