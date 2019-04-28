@@ -3,6 +3,8 @@ client/.token
 server/.token_db
 server/server.log
 client/client.log
+client/config.yaml
+server/config.yaml
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

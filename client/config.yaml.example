@@ -1,0 +1,6 @@
+client:
+  debug: true
+  address: 127.0.0.1
+  port: 64000
+  tls_verify: false
+  check_ssh: true

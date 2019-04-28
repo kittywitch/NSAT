@@ -18,10 +18,10 @@ def request_status():
 def receive_status(data, server):
 	if core.capabilities["sms"]:
 		pass
-	if core.capabilities["twilio"]:
+	if core.capabilities["pushover"]:
 		pass
 	print(data)
 
 @core.add_action("ssh_login")
 def ssh_login_event(data, server):
-	print(data)
+	logging.info(f"Connection as \"{data['user']}@{data['hostname']}\" from \"{data['ip']}:{data['port']}\".")

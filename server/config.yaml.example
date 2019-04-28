@@ -1,0 +1,11 @@
+server:
+  port: 64000
+  debug: true
+twilio:
+  in_n:
+  to_n:
+  token:
+  id:
+pushover:
+  token:
+  user:

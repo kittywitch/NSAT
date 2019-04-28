@@ -33,13 +33,13 @@ if core.config.client.check_ssh:
 		        		"port":accept_search.group(5)
 		        	}
 		        	logging.info(f"Connection as \"{packet['user']}@{packet['hostname']}\" from \"{packet['ip']}:{packet['port']}\".")
-		        	core.socket_send(core.client, json.loads(packet))
+		        	core.socket_send(core.client, json.dumps(packet))
 		        	continue
 		    time.sleep(1)
 
 	logging.info("Enabled SSH logs checker.")
-	authlogThread = threading.Thread(target=check_ssh_auth_logs)
-	authlogThread.daemon = True
-	authlogThread.start()
+	authThread = threading.Thread(name="SSH Logger",target=check_ssh_auth_logs)
+	authThread.daemon = True
+	core.threads.append(authThread)
 else:
 	logging.info("SSH logs checker not enabled.")
