@@ -1,7 +1,7 @@
 # external
 import logging, json, threading
 # internal
-import core
+import core, handlers.pushover, handlers.sms
 
 @core.add_timer(60)
 def request_status():
@@ -24,9 +24,13 @@ def receive_status(data, server):
 
 @core.add_action("ssh_login")
 def ssh_login_event(data, server):
+	handlers.pushover.notify(f"Connection as \"{data['user']}@{data['hostname']}\" from \"{data['ip']}:{data['port']}\".")
+	handlers.sms.notify_sms(f"Connection as \"{data['user']}@{data['hostname']}\" from \"{data['ip']}:{data['port']}\".")
 	logging.info(f"Connection as \"{data['user']}@{data['hostname']}\" from \"{data['ip']}:{data['port']}\".")
 
 @core.add_action("listen_ports")
 def listen_ports_event(data, server):
 	port_list = [d["port"] for d in data["port_data"]]
+	# handlers.pushover.notify(f"{server._peer.host} is listening on ports {', '.join(port_list)}.")
+	# handlers.sms.notify_sms(f"{server._peer.host} is listening on ports {', '.join(port_list)}.")
 	logging.info(f"{server._peer.host} is listening on ports {', '.join(port_list)}.")
