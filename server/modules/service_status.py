@@ -24,9 +24,9 @@ def receive_status(data, server):
 
 @core.add_action("ssh_login")
 def ssh_login_event(data, server):
-	handlers.pushover.notify(f"Connection as \"{data['user']}@{data['hostname']}\" from \"{data['ip']}:{data['port']}\".")
-	handlers.sms.notify_sms(f"Connection as \"{data['user']}@{data['hostname']}\" from \"{data['ip']}:{data['port']}\".")
-	logging.info(f"Connection as \"{data['user']}@{data['hostname']}\" from \"{data['ip']}:{data['port']}\".")
+	handlers.pushover.notify(f"Connection as \"{data['user']}@{data['hostname']}\" from \"{data['ip']}:{data['port']}\" using {data['method']}.")
+	handlers.sms.notify_sms(f"Connection as \"{data['user']}@{data['hostname']}\" from \"{data['ip']}:{data['port']}\" using {data['method']}.")
+	logging.info(f"Connection as \"{data['user']}@{data['hostname']}\" from \"{data['ip']}:{data['port']}\" using {data['method']}.")
 
 @core.add_action("listen_ports")
 def listen_ports_event(data, server):
