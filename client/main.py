@@ -4,7 +4,7 @@
 from twisted.internet import ssl, reactor, endpoints, defer, task
 from twisted.internet.protocol import ClientFactory, Protocol
 from twisted.protocols.basic import LineReceiver
-import uuid, json, os, hashlib, time, logging, coloredlogs
+import uuid, json, os, hashlib, time, logging, threading, coloredlogs
 # internal
 import core, client
 
