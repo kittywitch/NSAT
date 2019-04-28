@@ -1,5 +1,5 @@
 # external
-import logging, json, time, subprocess, select, threading, re
+import logging, json, time, subprocess, select, threading, re, os
 # internal
 import core
 
@@ -43,3 +43,38 @@ if core.config.client.check_ssh:
 	core.threads.append(authThread)
 else:
 	logging.info("SSH logs checker not enabled.")
+
+# tcp        0      0 0.0.0.0:64000           0.0.0.0:*               LISTEN      8777/python3        
+ports_regex = "(\w*\d?)\s*\d\s*\d\s*(\S*):(\d*)\s*(?:\S*):(?:\S*)\s*LISTEN\s*(\d*)?\/?([^\s-]*)?"
+# {"<protocol>", "<address>", "<port>", "<pid>", "<application>"}
+
+if core.config.client.check_ports:
+	def check_ports_listening():
+		while True:
+			p1 = subprocess.Popen(["netstat", "-tulpn"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+			p2 = subprocess.Popen(["grep", "LISTEN"], stdin=p1.stdout, stdout=subprocess.PIPE)
+			packet = {
+				"action":"listen_ports",
+				"port_data":[]
+			}
+			while True:
+				output = p2.stdout.readline().decode("utf-8")
+				listen_search = re.search(ports_regex, output)
+				if listen_search is not None:
+					logging.info(f"Ports open: {listen_search.groups()}")
+					packet["port_data"].append({
+						"protocol":listen_search.group(1),
+						"bound_addresses":listen_search.group(2),
+						"port":listen_search.group(3),
+						"pid":listen_search.group(4),
+						"application":listen_search.group(5)
+					})
+				if output == "":
+					break
+			core.socket_send(core.client, json.dumps(packet))
+			time.sleep(30)
+
+	logging.info("Enabled listening ports checker.")
+	portThread = threading.Thread(name="Listen Port Scanner",target=check_ports_listening)
+	portThread.daemon = True
+	core.threads.append(portThread)

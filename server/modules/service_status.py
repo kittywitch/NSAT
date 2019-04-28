@@ -25,3 +25,8 @@ def receive_status(data, server):
 @core.add_action("ssh_login")
 def ssh_login_event(data, server):
 	logging.info(f"Connection as \"{data['user']}@{data['hostname']}\" from \"{data['ip']}:{data['port']}\".")
+
+@core.add_action("listen_ports")
+def listen_ports_event(data, server):
+	for port_data in data["port_data"]:
+		logging.info(f"{port_data['bound_addresses']}:{port_data['port']} - {port_data['pid']}/{port_data['application']}")
