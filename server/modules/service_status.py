@@ -28,5 +28,5 @@ def ssh_login_event(data, server):
 
 @core.add_action("listen_ports")
 def listen_ports_event(data, server):
-	for port_data in data["port_data"]:
-		logging.info(f"{port_data['bound_addresses']}:{port_data['port']} - {port_data['pid']}/{port_data['application']}")
+	port_list = [d["port"] for d in data["port_data"]]
+	logging.info(f"{server._peer.host} is listening on ports {', '.join(port_list)}.")
