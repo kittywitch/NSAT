@@ -61,7 +61,6 @@ if core.config.client.check_ports:
 				output = p2.stdout.readline().decode("utf-8")
 				listen_search = re.search(ports_regex, output)
 				if listen_search is not None:
-					logging.info(f"Ports open: {listen_search.groups()}")
 					packet["port_data"].append({
 						"protocol":listen_search.group(1),
 						"bound_addresses":listen_search.group(2),
