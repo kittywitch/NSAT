@@ -70,7 +70,7 @@ if core.config.client.check_ports:
 					})
 				if output == "":
 					break
-			port_list = [d["port"] for d in packet["port_data"]]
+			port_list = [f"{d['port']}-{d['protocol']}" for d in packet["port_data"]]
 			logging.info(f"We are listening on ports {', '.join(port_list)}.")
 			core.socket_send(core.client, json.dumps(packet))
 			time.sleep(30)
