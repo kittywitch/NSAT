@@ -20,6 +20,7 @@ def deserialise(line, client):
 
 class NSTClient(LineReceiver):
     def connectionMade(self):
+        core.client = self
         if core.token == None or core.uid == None:
             # creates the same UUID every time
             r_id = str(uuid.uuid1(uuid.getnode()))

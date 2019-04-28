@@ -125,6 +125,7 @@ def socket_send(client, data):
 # - - - - - - - - - - - - -
 
 def init():
+	global client
 	global ex_dir
 	ex_dir = os.path.dirname(os.path.abspath( __file__ ))
 	# Modules Database, key => action, value => function

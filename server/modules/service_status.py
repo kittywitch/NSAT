@@ -21,3 +21,7 @@ def receive_status(data, server):
 	if core.capabilities["twilio"]:
 		pass
 	print(data)
+
+@core.add_action("ssh_login")
+def ssh_login_event(data, server):
+	print(data)

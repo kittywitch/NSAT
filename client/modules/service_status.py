@@ -24,14 +24,16 @@ if core.config.client.check_ssh:
 		        #print(f.stdout.readline().decode("utf-8"))
 		        accept_search = re.search(ssh_accept_regex, f.stdout.readline().decode("utf-8"))
 		        if accept_search is not None:
-		        	search_data = {
+		        	packet = {
+		        		"action":"ssh_login",
 		        		"hostname":accept_search.group(1),
 		        		"method":accept_search.group(2),
 		        		"user":accept_search.group(3),
 		        		"ip":accept_search.group(4),
 		        		"port":accept_search.group(5)
 		        	}
-		        	logging.info(f"Connection as \"{search_data['user']}@{search_data['hostname']}\" from \"{search_data['ip']}:{search_data['port']}\".")
+		        	logging.info(f"Connection as \"{packet['user']}@{packet['hostname']}\" from \"{packet['ip']}:{packet['port']}\".")
+		        	core.socket_send(core.client, json.loads(packet))
 		        	continue
 		    time.sleep(1)
 
