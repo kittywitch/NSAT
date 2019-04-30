@@ -5,7 +5,7 @@ import core
 
 def init():
 	global client
-	if hasattr(core.config.pushover, "user") and hasattr(core.config.pushover, "token") and core.config.pushover.user != None and core.config.pushover.token != None:
+	if hasattr(core.config, "pushover") and hasattr(core.config.pushover, "user") and hasattr(core.config.pushover, "token") and core.config.pushover.user != None and core.config.pushover.token != None:
 		client = http.client.HTTPSConnection("api.pushover.net:443")
 		logging.info("Config required for Pushover provided. Pushover support enabled.")
 		return True
