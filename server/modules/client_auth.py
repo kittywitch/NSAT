@@ -1,7 +1,7 @@
 # external
 import logging, json
 # internal
-import core
+import core, handlers.pushover, handlers.sms
 
 @core.add_action("register")
 def register_client(data, server):
