@@ -43,7 +43,7 @@ A python3 network service analytics tool - server section.
 	with open(os.path.join(os.path.dirname(os.path.abspath( __file__ )), "keys/server.pem")) as f:
 		certData = f.read()
 	certificate = ssl.PrivateCertificate.loadPEM(certData).options()
-	# openssl req -newkey rsa:2048 -nodes -keyout server.key -out server.crt
+	# openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365
 	logging.info(f"Binding reactor to port {core.config.server.port}.")
 	reactor.listenSSL(core.config.server.port, factory, certificate)
 	logging.info("Running the reactor.")

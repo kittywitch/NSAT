@@ -40,8 +40,8 @@ pip install pyopenssl pyyaml twisted configparser service_identity twilio colore
 ## Self-signed TLS setup
 ```
 cd server
-openssl req -newkey rsa:2048 -nodes -keyout keys/server.key -out keys/server.crt
-cat keys/server.crt keys/server.key > keys/server.pem
+openssl req -x509 -newkey rsa:4096 -keyout keys/key.pem -out keys/cert.pem -days 365
+cat keys/cert.pem keys/key.pem > keys/server.pem
 ```
 
 ## Running
