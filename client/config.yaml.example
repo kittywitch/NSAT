@@ -4,3 +4,4 @@ client:
   port: 64000
   tls_verify: false
   check_ssh: true
+  check_ports: true
