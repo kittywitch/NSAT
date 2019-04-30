@@ -23,6 +23,7 @@ def notify_sms(msg_txt):
 		    from_ = core.config.twilio.in_n,
 		    body = msg_txt
 		)
+		logging.debug(msg)
 		return msg
 
 # TODO: Implement TwiML service backend
@@ -33,4 +34,5 @@ def notify_call():
 		    from_ = core.config.twilio.in_n,
 		    url = "http://demo.twilio.com/docs/voice.xml"
 		)
+		logging.debug(msg)
 		return call
