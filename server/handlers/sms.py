@@ -5,8 +5,8 @@ import logging
 import core
 
 def init():
-	global client
 	try:
+		global client
 		client = Client(core.config.twilio.id, core.config.twilio.token)
 		if hasattr(core.config.twilio, "in_n") and hasattr(core.config.twilio, "out_n") and core.config.twilio.id != None and core.config.twilio.token != None and core.config.twilio.in_n != None and core.config.twilio.out_n != None:
 			logging.info("Config required for Twilo provided. Twilio support enabled.")
