@@ -21,8 +21,11 @@ def notify(msg):
 			"user": core.config.pushover.user,
 			"message": msg,
 		}), { "Content-type": "application/x-www-form-urlencoded" })
-		response = client.getresponse()
-		logging.debug(response.read())
-		return response
+		try:
+			response = client.getresponse()
+			logging.debug(response.read())
+			return response
+		except:
+			return None
 	else:
 		return None
