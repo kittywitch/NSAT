@@ -3,7 +3,7 @@ server:
   debug: true
 twilio:
   in_n:
-  to_n:
+  out_n:
   token:
   id:
 pushover:
